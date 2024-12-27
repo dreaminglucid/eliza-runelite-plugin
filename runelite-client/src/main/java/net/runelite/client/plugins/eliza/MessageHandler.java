@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.bridgetroll;
+package net.runelite.client.plugins.eliza;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +10,11 @@ import net.runelite.client.callback.ClientThread;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static net.runelite.client.plugins.eliza.ElizaConstants.*;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static net.runelite.client.plugins.bridgetroll.BridgeTrollConstants.*;
 
 @Slf4j
 @Singleton
@@ -67,7 +68,7 @@ public class MessageHandler {
 
     public void handleChatMessage(ChatMessage chatMessage, Client client, 
                                 PlayerTracker playerTracker, APIService apiService, 
-                                BridgeTrollConfig config) {
+                                ElizaConfig config) {
         String sender = chatMessage.getName();
         String message = chatMessage.getMessage();
         

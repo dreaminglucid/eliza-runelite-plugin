@@ -1,11 +1,11 @@
-package net.runelite.client.plugins.bridgetroll;
+package net.runelite.client.plugins.eliza;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
 @ConfigGroup("bridgetroll")
-public interface BridgeTrollConfig extends Config {
+public interface ElizaConfig extends Config {
     String API_BASE_URL = "http://localhost:3000";
 
     @ConfigItem(
