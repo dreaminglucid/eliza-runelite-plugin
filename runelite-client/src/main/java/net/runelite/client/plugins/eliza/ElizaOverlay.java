@@ -48,7 +48,7 @@ public class ElizaOverlay extends OverlayPanel {
 
         // Keep panel minimal
         panelComponent.getChildren().add(TitleComponent.builder()
-            .text("Bridge Troll")
+            .text("Eliza")
             .color(plugin.isStarted() ? Color.GREEN : Color.RED)
             .build());
 

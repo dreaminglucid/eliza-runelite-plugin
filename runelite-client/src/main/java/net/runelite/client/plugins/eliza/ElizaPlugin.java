@@ -19,9 +19,9 @@ import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
-    name = "Bridge Troll",
-    description = "A bridge troll that responds to player interactions using AI",
-    tags = {"npc", "chatbot", "bridge", "troll", "interaction", "ai"}
+    name = "Eliza",
+    description = "eliza integrated with runelite",
+    tags = {"npc", "chatbot", "eliza", "interaction", "ai"}
 )
 public class ElizaPlugin extends Plugin
 {
@@ -92,7 +92,7 @@ public class ElizaPlugin extends Plugin
     @Override
     protected void startUp()
     {
-        log.info("========== BRIDGE TROLL STARTUP ==========");
+        log.info("========== ELIZA STARTUP ==========");
         overlayManager.add(overlay);
         playerTracker.clear();
 
@@ -108,7 +108,7 @@ public class ElizaPlugin extends Plugin
     @Override
     protected void shutDown()
     {
-        log.info("========== BRIDGE TROLL SHUTDOWN ==========");
+        log.info("========== ELIZA SHUTDOWN ==========");
         overlayManager.remove(overlay);
 
         // Stop the server
@@ -123,7 +123,7 @@ public class ElizaPlugin extends Plugin
         isStarted = true;
         messageHandler.reset();
         playerTracker.reset();
-        log.info("Bridge Troll started. API Endpoint: {}", config.apiEndpoint());
+        log.info("eliza started. API Endpoint: {}", config.apiEndpoint());
     }
 
     private void stopPlugin()
@@ -131,7 +131,7 @@ public class ElizaPlugin extends Plugin
         isStarted = false;
         messageHandler.reset();
         playerTracker.reset();
-        log.info("Bridge Troll stopped");
+        log.info("eliza stopped");
     }
 
     @Subscribe

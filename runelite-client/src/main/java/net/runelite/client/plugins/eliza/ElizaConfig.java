@@ -4,7 +4,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 
-@ConfigGroup("bridgetroll")
+@ConfigGroup("Eliza")
 public interface ElizaConfig extends Config {
     String API_BASE_URL = "http://localhost:3000";
 
