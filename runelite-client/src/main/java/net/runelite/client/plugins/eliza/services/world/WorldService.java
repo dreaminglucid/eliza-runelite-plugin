@@ -8,7 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.eliza.state.LocationState;
 import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
-import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerService;
 import net.runelite.client.plugins.eliza.services.player.LocalPlayerService;
 
 import javax.inject.Inject;
@@ -26,7 +26,7 @@ public class WorldService {
     private Client client;
 
     @Inject
-    private OtherPlayerTracker playerTracker;
+    private OtherPlayerService playerTracker;
 
     @Inject
     private LocalPlayerService localPlayerService;
@@ -34,7 +34,7 @@ public class WorldService {
     @Inject
     private LocationDescriptionService locationDescriptionService;
 
-    public LocationState buildLocationState(Player player, OtherPlayerTracker tracker) {
+    public LocationState buildLocationState(Player player, OtherPlayerService tracker) {
         LocationState locState = new LocationState();
 
         if (player == null) {

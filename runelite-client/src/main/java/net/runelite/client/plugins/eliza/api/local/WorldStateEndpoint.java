@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.plugins.eliza.ElizaPlugin;
 import net.runelite.client.plugins.eliza.services.equipment.EquipmentService;
-import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerService;
 import net.runelite.client.plugins.eliza.services.world.WorldService;
 import net.runelite.client.plugins.eliza.state.GameDataSnapshot;
 import net.runelite.client.plugins.eliza.state.LocationState;
@@ -30,13 +30,13 @@ public class WorldStateEndpoint {
 
     private final Client client;
     private final WorldService worldService;
-    private final OtherPlayerTracker playerTracker;
+    private final OtherPlayerService playerTracker;
     private final EquipmentService equipmentService;
 
     public WorldStateEndpoint(
             Client client,
             WorldService worldService,
-            OtherPlayerTracker playerTracker,
+            OtherPlayerService playerTracker,
             EquipmentService equipmentService) {
         this.client = client;
         this.worldService = worldService;

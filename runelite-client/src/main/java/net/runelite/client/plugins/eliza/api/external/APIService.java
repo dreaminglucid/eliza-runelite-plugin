@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
-import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerService;
 import net.runelite.client.plugins.eliza.utils.ElizaConstants;
 import okhttp3.*;
 import javax.inject.Singleton;
@@ -22,7 +22,7 @@ public class APIService {
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public void sendMessage(String sender, String message, Client client,
-            OtherPlayerTracker playerTracker, ElizaConfig config,
+            OtherPlayerService playerTracker, ElizaConfig config,
             Consumer<List<String>> responseHandler) {
         try {
             JsonObject requestBody = createRequestBody(sender, message, client, playerTracker);
@@ -49,7 +49,7 @@ public class APIService {
     }
 
     private JsonObject createRequestBody(String sender, String message, Client client,
-            OtherPlayerTracker playerTracker) {
+            OtherPlayerService playerTracker) {
         JsonObject requestBody = new JsonObject();
         try {
             requestBody.addProperty("userId", sender);
@@ -79,7 +79,7 @@ public class APIService {
         return requestBody;
     }
 
-    private JsonObject createContextObject(String sender, OtherPlayerTracker playerTracker) {
+    private JsonObject createContextObject(String sender, OtherPlayerService playerTracker) {
         JsonObject context = new JsonObject();
         try {
             JsonArray recentPlayers = new JsonArray();
@@ -110,7 +110,7 @@ public class APIService {
         return context;
     }
 
-    private void handleAPIResponse(Response response, OtherPlayerTracker playerTracker,
+    private void handleAPIResponse(Response response, OtherPlayerService playerTracker,
             Consumer<List<String>> responseHandler) {
         if (response == null) {
             log.error("Null response received");
@@ -172,7 +172,7 @@ public class APIService {
         }
     }
 
-    private List<String> processResponse(String response, OtherPlayerTracker playerTracker) {
+    private List<String> processResponse(String response, OtherPlayerService playerTracker) {
         if (response == null)
             return Collections.emptyList();
 

@@ -15,12 +15,12 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.eliza.actions.chat.MessageHandler;
 import net.runelite.client.plugins.eliza.api.external.APIService;
 import net.runelite.client.plugins.eliza.api.local.WorldStateEndpoint;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
-import net.runelite.client.plugins.eliza.services.chat.MessageHandler;
 import net.runelite.client.plugins.eliza.services.equipment.EquipmentService;
-import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerService;
 import net.runelite.client.plugins.eliza.services.world.WorldService;
 import net.runelite.client.plugins.eliza.state.EquipmentState;
 import net.runelite.client.plugins.eliza.state.GameDataSnapshot;
@@ -59,7 +59,7 @@ public class ElizaPlugin extends Plugin {
     private MessageHandler messageHandler;
 
     @Inject
-    private OtherPlayerTracker playerTracker;
+    private OtherPlayerService playerTracker;
 
     @Inject
     private EquipmentService equipmentService;
@@ -87,7 +87,7 @@ public class ElizaPlugin extends Plugin {
     public static WorldStateEndpoint provideWorldStateEndpoint(
             Client client,
             WorldService worldService,
-            OtherPlayerTracker playerTracker,
+            OtherPlayerService playerTracker,
             EquipmentService equipmentService) {
         return new WorldStateEndpoint(client, worldService, playerTracker, equipmentService);
     }

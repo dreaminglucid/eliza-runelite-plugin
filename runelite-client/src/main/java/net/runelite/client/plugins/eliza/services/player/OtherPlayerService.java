@@ -15,7 +15,7 @@ import java.util.*;
 
 @Slf4j
 @Singleton
-public class OtherPlayerTracker {
+public class OtherPlayerService {
     private final Set<String> activePlayerNames = new HashSet<>();
     private final Queue<Long> recentMessageTimes = new LinkedList<>();
     private final Map<String, Integer> playerInteractions = new HashMap<>();

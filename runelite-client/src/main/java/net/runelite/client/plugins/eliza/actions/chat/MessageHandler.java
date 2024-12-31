@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza.services.chat;
+package net.runelite.client.plugins.eliza.actions.chat;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -7,7 +7,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.plugins.eliza.api.external.APIService;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
-import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -68,7 +68,7 @@ public class MessageHandler {
     }
 
     public void handleChatMessage(ChatMessage chatMessage, Client client,
-            OtherPlayerTracker playerTracker, APIService apiService,
+            OtherPlayerService playerTracker, APIService apiService,
             ElizaConfig config) {
         String sender = chatMessage.getName();
         String message = chatMessage.getMessage();
@@ -96,7 +96,7 @@ public class MessageHandler {
         messageQueue.addAll(messages);
     }
 
-    private boolean shouldRespond(OtherPlayerTracker playerTracker) {
+    private boolean shouldRespond(OtherPlayerService playerTracker) {
         long currentTime = System.currentTimeMillis();
         return currentTime - lastResponseTime >= GLOBAL_COOLDOWN &&
                 Math.random() < playerTracker.calculateResponseChance();
