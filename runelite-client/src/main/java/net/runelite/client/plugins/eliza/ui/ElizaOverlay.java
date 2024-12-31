@@ -7,7 +7,7 @@ import java.awt.Color;
 
 import net.runelite.client.plugins.eliza.ElizaPlugin;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
-import net.runelite.client.plugins.eliza.services.PlayerTracker;
+import net.runelite.client.plugins.eliza.services.OtherPlayerTracker;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -18,15 +18,15 @@ import java.time.temporal.ChronoUnit;
 public class ElizaOverlay extends OverlayPanel {
     private final ElizaPlugin plugin;
     private final ElizaConfig config;
-    private final PlayerTracker playerTracker;
-    
+    private final OtherPlayerTracker playerTracker;
+
     private Instant lastUpdate = Instant.now();
     private int cachedPlayerCount = 0;
     private int cachedRecentCount = 0;
     private static final int UPDATE_INTERVAL_SECONDS = 5;
 
     @Inject
-    public ElizaOverlay(ElizaPlugin plugin, ElizaConfig config, PlayerTracker playerTracker) {
+    public ElizaOverlay(ElizaPlugin plugin, ElizaConfig config, OtherPlayerTracker playerTracker) {
         super(plugin);
         setPosition(OverlayPosition.TOP_LEFT);
         this.plugin = plugin;
@@ -52,21 +52,21 @@ public class ElizaOverlay extends OverlayPanel {
 
         // Keep panel minimal
         panelComponent.getChildren().add(TitleComponent.builder()
-            .text("Eliza")
-            .color(plugin.isStarted() ? Color.GREEN : Color.RED)
-            .build());
+                .text("Eliza")
+                .color(plugin.isStarted() ? Color.GREEN : Color.RED)
+                .build());
 
         if (plugin.isStarted()) {
             panelComponent.getChildren().add(LineComponent.builder()
-                .left("Players:")
-                .right(String.valueOf(cachedPlayerCount))
-                .build());
+                    .left("Players:")
+                    .right(String.valueOf(cachedPlayerCount))
+                    .build());
 
             if (cachedRecentCount > 0) {
                 panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Recent:")
-                    .right(String.valueOf(cachedRecentCount))
-                    .build());
+                        .left("Recent:")
+                        .right(String.valueOf(cachedRecentCount))
+                        .build());
             }
         }
 

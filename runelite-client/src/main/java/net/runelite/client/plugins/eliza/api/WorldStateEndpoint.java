@@ -9,7 +9,7 @@ import com.sun.net.httpserver.HttpServer;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.plugins.eliza.ElizaPlugin;
-import net.runelite.client.plugins.eliza.services.PlayerTracker;
+import net.runelite.client.plugins.eliza.services.OtherPlayerTracker;
 import net.runelite.client.plugins.eliza.services.WorldService;
 import net.runelite.client.plugins.eliza.services.EquipmentService;
 import net.runelite.client.plugins.eliza.state.GameDataSnapshot;
@@ -23,24 +23,21 @@ import java.net.InetSocketAddress;
 
 @Slf4j
 @Singleton
-public class WorldStateEndpoint
-{
+public class WorldStateEndpoint {
     private HttpServer server;
     private static final int PORT = 3001;
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private final Client client;
     private final WorldService worldService;
-    private final PlayerTracker playerTracker;
+    private final OtherPlayerTracker playerTracker;
     private final EquipmentService equipmentService;
 
     public WorldStateEndpoint(
-        Client client,
-        WorldService worldService,
-        PlayerTracker playerTracker,
-        EquipmentService equipmentService
-    )
-    {
+            Client client,
+            WorldService worldService,
+            OtherPlayerTracker playerTracker,
+            EquipmentService equipmentService) {
         this.client = client;
         this.worldService = worldService;
         this.playerTracker = playerTracker;
@@ -49,11 +46,9 @@ public class WorldStateEndpoint
         log.info("WorldStateEndpoint constructor called");
     }
 
-    public void start()
-    {
+    public void start() {
         log.info("========== WORLD STATE ENDPOINT START ==========");
-        try
-        {
+        try {
             log.info("Creating server on port {}", PORT);
             server = HttpServer.create(new InetSocketAddress(PORT), 0);
 
@@ -66,46 +61,35 @@ public class WorldStateEndpoint
 
             log.info("World state endpoint started at http://localhost:{}/world-state", PORT);
             log.info("============================================");
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             log.error("Failed to start world state endpoint", e);
             log.error("Cause: {}", e.getMessage());
             log.error("============================================");
         }
     }
 
-    public void stop()
-    {
+    public void stop() {
         log.info("========== WORLD STATE ENDPOINT STOP ==========");
-        if (server != null)
-        {
+        if (server != null) {
             server.stop(0);
             log.info("World state endpoint stopped");
-        }
-        else
-        {
+        } else {
             log.info("No server was running");
         }
         log.info("============================================");
     }
 
-    private class WorldStateHandler implements HttpHandler
-    {
+    private class WorldStateHandler implements HttpHandler {
         @Override
-        public void handle(HttpExchange exchange) throws IOException
-        {
+        public void handle(HttpExchange exchange) throws IOException {
             log.info("Received world state request from: {}", exchange.getRemoteAddress());
 
-            if (!"GET".equals(exchange.getRequestMethod()))
-            {
+            if (!"GET".equals(exchange.getRequestMethod())) {
                 exchange.sendResponseHeaders(405, -1);
                 return;
             }
 
-            try
-            {
-                // Build the final JSON response from the snapshot
+            try {
                 JsonObject worldState = buildSnapshotJson();
                 String response = gson.toJson(worldState);
 
@@ -115,27 +99,22 @@ public class WorldStateEndpoint
                 byte[] responseBytes = response.getBytes();
                 exchange.sendResponseHeaders(200, responseBytes.length);
 
-                try (OutputStream os = exchange.getResponseBody())
-                {
+                try (OutputStream os = exchange.getResponseBody()) {
                     os.write(responseBytes);
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 log.error("Error handling world state request", e);
                 exchange.sendResponseHeaders(500, -1);
             }
         }
 
-        private JsonObject buildSnapshotJson()
-        {
+        private JsonObject buildSnapshotJson() {
             GameDataSnapshot snap = ElizaPlugin.getSnapshot();
 
             JsonObject state = new JsonObject();
             JsonObject currentPlayer = new JsonObject();
 
-            if (snap.isLoggedIn())
-            {
+            if (snap.isLoggedIn()) {
                 currentPlayer.addProperty("name", snap.getPlayerName());
 
                 // location
@@ -154,18 +133,11 @@ public class WorldStateEndpoint
                 // equipment
                 EquipmentState eq = snap.getEquipmentState();
                 JsonObject equipObj = new JsonObject();
-                // "slots" -> object
                 equipObj.add("slots", gson.toJsonTree(eq.getSlots()));
                 equipObj.addProperty("description", eq.getDescription());
 
-                // If you want "stats" or "inventory", you can add them here:
-                // equipObj.add("stats", new JsonObject());
-                // equipObj.add("inventory", new JsonArray());
-
                 currentPlayer.add("equipment", equipObj);
-            }
-            else
-            {
+            } else {
                 // Not logged in -> minimal structure
                 currentPlayer.addProperty("name", "Unknown");
                 JsonObject locationObj = new JsonObject();
@@ -179,7 +151,7 @@ public class WorldStateEndpoint
 
             state.add("currentPlayer", currentPlayer);
 
-            // You can add a "context" or top-level "timestamp"
+            // Add context and timestamp
             JsonObject context = new JsonObject();
             context.addProperty("totalPlayers", snap.getTotalPlayers());
             context.addProperty("timestamp", snap.getTimestamp());

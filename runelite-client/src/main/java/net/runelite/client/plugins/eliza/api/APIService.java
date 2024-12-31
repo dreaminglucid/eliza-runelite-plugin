@@ -6,7 +6,7 @@ import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
-import net.runelite.client.plugins.eliza.services.PlayerTracker;
+import net.runelite.client.plugins.eliza.services.OtherPlayerTracker;
 import net.runelite.client.plugins.eliza.utils.ElizaConstants;
 import okhttp3.*;
 import javax.inject.Inject;
@@ -25,13 +25,13 @@ public class APIService {
     private final Gson gson = new Gson();
 
     public void sendMessage(String sender, String message, Client client,
-            PlayerTracker playerTracker, ElizaConfig config,
+            OtherPlayerTracker playerTracker, ElizaConfig config,
             Consumer<List<String>> responseHandler) {
         try {
             JsonObject requestBody = createRequestBody(sender, message, client, playerTracker);
 
             Request request = new Request.Builder()
-                    .url(config.apiEndpoint() + "/24b86618-cfdf-02dc-8b23-84627ec0e9ea/message") // CHANGE THIS LINE TO YOUR AGENTS "agent:Id"
+                    .url(config.apiEndpoint() + "/24b86618-cfdf-02dc-8b23-84627ec0e9ea/message")
                     .post(RequestBody.create(JSON, requestBody.toString()))
                     .build();
 
@@ -51,26 +51,23 @@ public class APIService {
         }
     }
 
-    private JsonObject createRequestBody(String sender, String message, Client client, PlayerTracker playerTracker) {
+    private JsonObject createRequestBody(String sender, String message, Client client,
+            OtherPlayerTracker playerTracker) {
         JsonObject requestBody = new JsonObject();
         try {
             requestBody.addProperty("userId", sender);
             requestBody.addProperty("userName", sender);
 
-            // Create context first to ensure it exists
             JsonObject context = createContextObject(sender, playerTracker);
             requestBody.add("context", context);
 
-            // Get player and handle null case
             Player player = playerTracker.findPlayerByName(sender);
             if (player != null) {
                 try {
-                    String fullMessage = String.format("%s",
-                            message, sender);
+                    String fullMessage = String.format("%s", message, sender);
                     requestBody.addProperty("text", fullMessage);
                 } catch (Exception e) {
                     log.error("Error creating player-specific data", e);
-                    // Fallback to basic message
                     requestBody.addProperty("text", message);
                 }
             } else {
@@ -80,13 +77,12 @@ public class APIService {
             log.info("API request body: {}", requestBody);
         } catch (Exception e) {
             log.error("Error creating request body", e);
-            // Ensure we at least have a valid JSON object with the message
             requestBody.addProperty("text", message);
         }
         return requestBody;
     }
 
-    private JsonObject createContextObject(String sender, PlayerTracker playerTracker) {
+    private JsonObject createContextObject(String sender, OtherPlayerTracker playerTracker) {
         JsonObject context = new JsonObject();
         try {
             JsonArray recentPlayers = new JsonArray();
@@ -106,7 +102,6 @@ public class APIService {
                 context.addProperty("isBusyChat",
                         playerTracker.getActivePlayerCount() > ElizaConstants.QUIET_CHAT_THRESHOLD);
             } else {
-                // Fallback if playerTracker is null
                 context.add("recentPlayers", recentPlayers);
                 context.addProperty("totalPlayers", 0);
                 context.addProperty("currentSpeaker", sender);
@@ -118,7 +113,7 @@ public class APIService {
         return context;
     }
 
-    private void handleAPIResponse(Response response, PlayerTracker playerTracker,
+    private void handleAPIResponse(Response response, OtherPlayerTracker playerTracker,
             Consumer<List<String>> responseHandler) {
         if (response == null) {
             log.error("Null response received");
@@ -146,7 +141,6 @@ public class APIService {
             }
 
             try {
-                // Use JsonParser.parse instead of parseString
                 JsonElement jsonElement = new JsonParser().parse(jsonResponse);
                 if (!jsonElement.isJsonArray()) {
                     log.error("Expected JSON array response");
@@ -181,13 +175,11 @@ public class APIService {
         }
     }
 
-    private List<String> processResponse(String response, PlayerTracker playerTracker) {
+    private List<String> processResponse(String response, OtherPlayerTracker playerTracker) {
         if (response == null)
             return Collections.emptyList();
 
         try {
-
-            // Handle @username mentions
             if (playerTracker != null) {
                 for (String playerName : playerTracker.getActivePlayerNames()) {
                     String atMention = "@" + playerName;

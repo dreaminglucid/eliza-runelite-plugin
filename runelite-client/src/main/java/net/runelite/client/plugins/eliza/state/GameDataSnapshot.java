@@ -8,8 +8,7 @@ import lombok.Data;
  * so define them here.
  */
 @Data
-public class GameDataSnapshot
-{
+public class GameDataSnapshot {
     private boolean loggedIn;
     private String playerName;
 

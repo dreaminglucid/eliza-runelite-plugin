@@ -40,8 +40,8 @@ public class MessageHandler {
 
     public void processQueue(ClientThread clientThread) {
         long currentTime = System.currentTimeMillis();
-        if (!messageQueue.isEmpty() && !isProcessingQueue.get() && 
-            (currentTime - lastMessageTime >= MESSAGE_DELAY || lastMessageTime == 0)) {
+        if (!messageQueue.isEmpty() && !isProcessingQueue.get() &&
+                (currentTime - lastMessageTime >= MESSAGE_DELAY || lastMessageTime == 0)) {
             processNextMessage(clientThread);
         }
     }
@@ -68,12 +68,12 @@ public class MessageHandler {
         }
     }
 
-    public void handleChatMessage(ChatMessage chatMessage, Client client, 
-                                PlayerTracker playerTracker, APIService apiService, 
-                                ElizaConfig config) {
+    public void handleChatMessage(ChatMessage chatMessage, Client client,
+            OtherPlayerTracker playerTracker, APIService apiService,
+            ElizaConfig config) {
         String sender = chatMessage.getName();
         String message = chatMessage.getMessage();
-        
+
         if (sender.toLowerCase().contains(TROLL_NAME) || message.equalsIgnoreCase(lastSentMessage)) {
             log.debug("Ignoring self-message or echo: {}", message);
             return;
@@ -86,7 +86,7 @@ public class MessageHandler {
 
         log.info("Chat message received from: {}", sender);
         log.info("Message content: '{}'", message);
-        
+
         playerTracker.updatePlayerInteraction(sender);
         lastResponseTime = System.currentTimeMillis();
 
@@ -97,17 +97,17 @@ public class MessageHandler {
         messageQueue.addAll(messages);
     }
 
-    private boolean shouldRespond(PlayerTracker playerTracker) {
+    private boolean shouldRespond(OtherPlayerTracker playerTracker) {
         long currentTime = System.currentTimeMillis();
         return currentTime - lastResponseTime >= GLOBAL_COOLDOWN &&
-               Math.random() < playerTracker.calculateResponseChance();
+                Math.random() < playerTracker.calculateResponseChance();
     }
 
     private void sendPublicMessage(String message) {
         if (message == null || message.isEmpty()) {
             return;
         }
-        
+
         lastSentMessage = message;
         log.info("Sending message: '{}'", message);
         client.runScript(ScriptID.CHAT_SEND, message, 0, 0, 0, 0);

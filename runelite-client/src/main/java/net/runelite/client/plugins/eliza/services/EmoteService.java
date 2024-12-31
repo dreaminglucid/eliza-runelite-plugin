@@ -1,5 +1,4 @@
-package net.runelite.client.plugins.eliza.services;
-// package net.runelite.client.plugins.bridgetroll;
+// package net.runelite.client.plugins.eliza.services;
 
 // import lombok.extern.slf4j.Slf4j;
 // import net.runelite.api.Client;
@@ -59,9 +58,10 @@ package net.runelite.client.plugins.eliza.services;
 //     }
 
 //     private int getEmoteIdForEmotion(String emotion) {
-//         if (emotion == null) return -1;
-        
-//         switch(emotion.toLowerCase()) {
+//         if (emotion == null)
+//             return -1;
+
+//         switch (emotion.toLowerCase()) {
 //             case "laugh":
 //                 return 2;
 //             case "cry":
@@ -90,7 +90,7 @@ package net.runelite.client.plugins.eliza.services;
 //                 return 14;
 //             case "blow_kiss":
 //                 return 15;
-//             case "idea": 
+//             case "idea":
 //                 return 16;
 //             case "stamp":
 //                 return 17;

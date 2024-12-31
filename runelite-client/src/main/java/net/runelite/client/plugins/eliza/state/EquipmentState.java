@@ -8,8 +8,7 @@ import lombok.Data;
  * "slots" is a Map like {"headId":..., "shieldId":..., etc.}
  */
 @Data
-public class EquipmentState
-{
+public class EquipmentState {
     private Map<String, Integer> slots;
     private String description;
 }

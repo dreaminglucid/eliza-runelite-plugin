@@ -24,7 +24,10 @@ public class WorldService {
     private Client client;
 
     @Inject
-    private PlayerTracker playerTracker;
+    private OtherPlayerTracker playerTracker;
+
+    @Inject
+    private LocalPlayerService localPlayerService;
 
     // Define known locations and their descriptions
     private static final Map<Integer, Map<String, Object>> LOCATION_DATA = new HashMap<>();
@@ -257,13 +260,10 @@ public class WorldService {
         });
     }
 
-    public LocationState buildLocationState(Player player, PlayerTracker tracker)
-    {
+    public LocationState buildLocationState(Player player, OtherPlayerTracker tracker) {
         LocationState locState = new LocationState();
 
-        if (player == null)
-        {
-            // If we have no local player, return a minimal placeholder
+        if (player == null) {
             locState.setDescription("No local player");
             locState.setNearbyPlayers(Collections.emptyList());
             return locState;
@@ -275,32 +275,23 @@ public class WorldService {
         locState.setPlane(point.getPlane());
         locState.setRegionId(point.getRegionID());
 
-        // Build a textual description: e.g. "Lumbridge Castle, facing south with Bob, Sue"
         String areaDesc = getAreaDescription(point);
         Direction facing = new Angle(player.getOrientation()).getNearestDirection();
         String desc = String.format("%s, facing %s", areaDesc, facing.name().toLowerCase());
 
-        // If you want to append the short "with <player1, player2>" text:
         String nearbyPlayersDesc = tracker.getNearbyPlayersDescription(point);
-        if (!nearbyPlayersDesc.isEmpty())
-        {
+        if (!nearbyPlayersDesc.isEmpty()) {
             desc += " with " + nearbyPlayersDesc;
         }
         locState.setDescription(desc);
 
-        // Build a list of nearbyPlayers: [{"name":..., "distance":...}, ...]
         List<Map<String, Object>> nearList = new ArrayList<>();
-        for (Player p : client.getPlayers())
-        {
-            // exclude the local player
-            if (p != null && !p.equals(player))
-            {
+        for (Player p : client.getPlayers()) {
+            if (p != null && !p.equals(localPlayerService.getLocalPlayer())) {
                 WorldPoint otherPoint = p.getWorldLocation();
-                if (otherPoint != null)
-                {
+                if (otherPoint != null) {
                     int distance = point.distanceTo(otherPoint);
-                    if (distance <= 15)
-                    {
+                    if (distance <= 15) {
                         Map<String, Object> info = new HashMap<>();
                         info.put("name", p.getName());
                         info.put("distance", distance);
@@ -314,17 +305,11 @@ public class WorldService {
         return locState;
     }
 
-    /**
-     * Existing helper that returns a short description of an area:
-     * e.g. "Lumbridge Castle near Bank" or "at coordinates (3165, 3487)".
-     */
-    private String getAreaDescription(WorldPoint point)
-    {
+    private String getAreaDescription(WorldPoint point) {
         int regionId = point.getRegionID();
         Map<String, Object> locationInfo = LOCATION_DATA.get(regionId);
 
-        if (locationInfo != null)
-        {
+        if (locationInfo != null) {
             StringBuilder desc = new StringBuilder();
             desc.append(locationInfo.get("name"));
 
@@ -333,29 +318,20 @@ public class WorldService {
                     + Math.abs(point.getY() - centerCoords[1]);
 
             String[] landmarks = (String[]) locationInfo.get("landmarks");
-            if (distanceFromCenter < 20 && landmarks != null && landmarks.length > 0)
-            {
+            if (distanceFromCenter < 20 && landmarks != null && landmarks.length > 0) {
                 desc.append(" near ");
-                // pick a landmark index based on distance
                 desc.append(landmarks[Math.min(distanceFromCenter / 10, landmarks.length - 1)]);
             }
 
             return desc.toString();
         }
 
-        // Fallback if region is unknown:
         return String.format("at coordinates (%d, %d)", point.getX(), point.getY());
     }
 
-    /**
-     * Existing method: returns a JSON with x,y,plane,regionId, plus
-     * "nearbyPlayers". The old approach used by some code.
-     */
-    public JsonObject getWorldLocation(Player player)
-    {
+    public JsonObject getWorldLocation(Player player) {
         JsonObject location = new JsonObject();
-        if (player == null)
-        {
+        if (player == null) {
             return location;
         }
 
@@ -365,20 +341,13 @@ public class WorldService {
         location.addProperty("plane", point.getPlane());
         location.addProperty("regionId", point.getRegionID());
 
-        // Get nearby players from PlayerTracker
         playerTracker.addNearbyPlayersToJson(location, point);
 
         return location;
     }
 
-    /**
-     * Existing method: builds a "fancy" location description string,
-     * e.g. "Lumbridge Castle, facing south with Bob, Sue"
-     */
-    public String getLocationDescription(Player player)
-    {
-        if (player == null)
-        {
+    public String getLocationDescription(Player player) {
+        if (player == null) {
             return "unknown location";
         }
 
@@ -389,19 +358,15 @@ public class WorldService {
         StringBuilder description = new StringBuilder(areaDesc);
         description.append(String.format(", facing %s", facing.name().toLowerCase()));
 
-        // Get nearby players from PlayerTracker
         String nearbyPlayersDesc = playerTracker.getNearbyPlayersDescription(point);
-        if (!nearbyPlayersDesc.isEmpty())
-        {
+        if (!nearbyPlayersDesc.isEmpty()) {
             description.append(" with ").append(nearbyPlayersDesc);
         }
 
         return description.toString();
     }
 
-    public WorldPoint getCurrentLocation()
-    {
-        Player player = client.getLocalPlayer();
-        return player != null ? player.getWorldLocation() : null;
+    public WorldPoint getCurrentLocation() {
+        return localPlayerService.getLocalPlayerLocation();
     }
 }

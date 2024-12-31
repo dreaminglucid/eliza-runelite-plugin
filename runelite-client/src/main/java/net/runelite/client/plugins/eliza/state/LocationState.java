@@ -9,8 +9,7 @@ import lombok.Data;
  * "nearbyPlayers" is a list of objects: [{"name":"Bob","distance":2}, ...]
  */
 @Data
-public class LocationState
-{
+public class LocationState {
     private int x;
     private int y;
     private int plane;
