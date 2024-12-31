@@ -21,22 +21,16 @@ public class APIService {
     private final OkHttpClient httpClient = new OkHttpClient();
     private final Gson gson = new Gson();
 
-    @Inject
-    private EquipmentService equipmentService;
+    public void sendMessage(String sender, String message, Client client,
+            PlayerTracker playerTracker, ElizaConfig config,
+            Consumer<List<String>> responseHandler) {
+        try {
+            JsonObject requestBody = createRequestBody(sender, message, client, playerTracker);
 
-    @Inject
-    private WorldService worldService;
-
-public void sendMessage(String sender, String message, Client client,
-        PlayerTracker playerTracker, ElizaConfig config,
-        Consumer<List<String>> responseHandler) {
-    try {
-        JsonObject requestBody = createRequestBody(sender, message, client, playerTracker);
-
-        Request request = new Request.Builder()
-                .url(config.apiEndpoint() + "/24b86618-cfdf-02dc-8b23-84627ec0e9ea/message")  // CHANGE THIS LINE
-                .post(RequestBody.create(JSON, requestBody.toString()))
-                .build();
+            Request request = new Request.Builder()
+                    .url(config.apiEndpoint() + "/24b86618-cfdf-02dc-8b23-84627ec0e9ea/message") // CHANGE THIS LINE TO YOUR AGENTS "agent:Id"
+                    .post(RequestBody.create(JSON, requestBody.toString()))
+                    .build();
 
             httpClient.newCall(request).enqueue(new Callback() {
                 @Override
@@ -68,42 +62,17 @@ public void sendMessage(String sender, String message, Client client,
             Player player = playerTracker.findPlayerByName(sender);
             if (player != null) {
                 try {
-                    // // Get equipment state
-                    // JsonObject equipmentState = equipmentService.getEquipmentState(player);
-                    // requestBody.add("equipment", equipmentState);
-
-                    // // Get world location state with error handling
-                    // JsonObject locationState = worldService.getWorldLocation(player);
-                    // if (locationState == null) {
-                    //     locationState = new JsonObject();
-                    // }
-                    // requestBody.add("location", locationState);
-
-                    // Create full message with equipment description and location
-                    // String equipmentDesc = equipmentService.getEquipmentDescription(player);
-                    // String locationDesc = worldService.getLocationDescription(player);
                     String fullMessage = String.format("%s",
                             message, sender);
                     requestBody.addProperty("text", fullMessage);
                 } catch (Exception e) {
                     log.error("Error creating player-specific data", e);
                     // Fallback to basic message
-                    // requestBody.add("equipment", new JsonObject());
-                    // requestBody.add("location", new JsonObject());
                     requestBody.addProperty("text", message);
                 }
             } else {
-                // Handle case where player is null
-                // requestBody.add("equipment", new JsonObject());
-                // requestBody.add("location", new JsonObject());
                 requestBody.addProperty("text", message);
             }
-
-            // Add available actions - Just examine and talk_to for stability
-            JsonArray actions = new JsonArray();
-            actions.add("examine");
-            actions.add("talk_to");
-            requestBody.add("actions", actions);
 
             log.info("API request body: {}", requestBody);
         } catch (Exception e) {
@@ -214,7 +183,6 @@ public void sendMessage(String sender, String message, Client client,
             return Collections.emptyList();
 
         try {
-            response = stripEmotes(response);
 
             // Handle @username mentions
             if (playerTracker != null) {
@@ -233,12 +201,6 @@ public void sendMessage(String sender, String message, Client client,
             log.error("Error processing response", e);
             return Collections.singletonList(response);
         }
-    }
-
-    private String stripEmotes(String message) {
-        if (message == null)
-            return "";
-        return message.replaceAll("\\*[^*]*\\*", "").trim();
     }
 
     private List<String> splitMessage(String message) {

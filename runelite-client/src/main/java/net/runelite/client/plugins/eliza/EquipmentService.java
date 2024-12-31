@@ -18,8 +18,7 @@ import java.util.Map;
 
 @Slf4j
 @Singleton
-public class EquipmentService
-{
+public class EquipmentService {
     @Inject
     private Client client;
 
@@ -27,19 +26,16 @@ public class EquipmentService
      * Existing method: returns a JSON object of equipment,
      * including "slots", "empty_slots" array, and a "description" string.
      */
-    public JsonObject getEquipmentState(Player player)
-    {
+    public JsonObject getEquipmentState(Player player) {
         JsonObject equipment = new JsonObject();
 
-        if (player != null && player.getPlayerComposition() != null)
-        {
+        if (player != null && player.getPlayerComposition() != null) {
             PlayerComposition composition = player.getPlayerComposition();
             JsonObject slots = new JsonObject();
             JsonArray emptySlots = new JsonArray();
             List<String> equippedItems = new ArrayList<>();
 
-            for (KitType type : KitType.values())
-            {
+            for (KitType type : KitType.values()) {
                 int itemId = composition.getEquipmentId(type);
                 int kitId = composition.getKitId(type);
                 String slotName = type.name().toLowerCase();
@@ -47,18 +43,16 @@ public class EquipmentService
                 slots.addProperty(slotName + "Id", itemId);
                 slots.addProperty(slotName + "KitId", kitId);
 
-                if (itemId != 0)
-                {
+                if (itemId != 0) {
                     ItemComposition itemComposition = client.getItemDefinition(itemId);
-                    if (itemComposition != null)
-                    {
-                        log.info("Equipment {} (index {}): ID {}, Name {}",
-                            slotName, type.getIndex(), itemId, itemComposition.getName());
+                    if (itemComposition != null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Equipment {} (index {}): ID {}, Name {}",
+                                    slotName, type.getIndex(), itemId, itemComposition.getName());
+                        }
                         equippedItems.add(itemComposition.getName());
                     }
-                }
-                else
-                {
+                } else {
                     emptySlots.add(slotName);
                 }
             }
@@ -75,24 +69,19 @@ public class EquipmentService
      * Returns a string description of the player's equipped items,
      * e.g. "Bronze sword and Wooden shield" or "nothing."
      */
-    public String getEquipmentDescription(Player player)
-    {
-        if (player == null || player.getPlayerComposition() == null)
-        {
+    public String getEquipmentDescription(Player player) {
+        if (player == null || player.getPlayerComposition() == null) {
             return "nothing";
         }
 
         List<String> equippedItems = new ArrayList<>();
         PlayerComposition composition = player.getPlayerComposition();
 
-        for (KitType type : KitType.values())
-        {
+        for (KitType type : KitType.values()) {
             int itemId = composition.getEquipmentId(type);
-            if (itemId != 0)
-            {
+            if (itemId != 0) {
                 ItemComposition itemComp = client.getItemDefinition(itemId);
-                if (itemComp != null)
-                {
+                if (itemComp != null) {
                     equippedItems.add(itemComp.getName());
                 }
             }
@@ -102,27 +91,20 @@ public class EquipmentService
     }
 
     /**
-     * Helper to create a user-friendly comma-and-‘and’ separated
+     * Helper to create a user-friendly comma-and-'and' separated
      * list from the equipped items (e.g. "Bronze sword, Wooden shield and Hat").
      */
-    private String createEquipmentDescription(List<String> equippedItems)
-    {
-        if (equippedItems.isEmpty())
-        {
+    private String createEquipmentDescription(List<String> equippedItems) {
+        if (equippedItems.isEmpty()) {
             return "nothing";
         }
 
         StringBuilder description = new StringBuilder();
-        for (int i = 0; i < equippedItems.size(); i++)
-        {
-            if (i > 0)
-            {
-                if (i == equippedItems.size() - 1)
-                {
+        for (int i = 0; i < equippedItems.size(); i++) {
+            if (i > 0) {
+                if (i == equippedItems.size() - 1) {
                     description.append(" and ");
-                }
-                else
-                {
+                } else {
                     description.append(", ");
                 }
             }
@@ -134,18 +116,14 @@ public class EquipmentService
     /**
      * Existing helper to check if the player has ANY equipment.
      */
-    public boolean hasEquipment(Player player)
-    {
-        if (player == null || player.getPlayerComposition() == null)
-        {
+    public boolean hasEquipment(Player player) {
+        if (player == null || player.getPlayerComposition() == null) {
             return false;
         }
 
         PlayerComposition composition = player.getPlayerComposition();
-        for (KitType type : KitType.values())
-        {
-            if (composition.getEquipmentId(type) != 0)
-            {
+        for (KitType type : KitType.values()) {
+            if (composition.getEquipmentId(type) != 0) {
                 return true;
             }
         }
@@ -155,23 +133,18 @@ public class EquipmentService
     /**
      * Existing helper to get a list of item names for what a player has equipped.
      */
-    public List<String> getEquippedItems(Player player)
-    {
+    public List<String> getEquippedItems(Player player) {
         List<String> equippedItems = new ArrayList<>();
-        if (player == null || player.getPlayerComposition() == null)
-        {
+        if (player == null || player.getPlayerComposition() == null) {
             return equippedItems;
         }
 
         PlayerComposition composition = player.getPlayerComposition();
-        for (KitType type : KitType.values())
-        {
+        for (KitType type : KitType.values()) {
             int itemId = composition.getEquipmentId(type);
-            if (itemId != 0)
-            {
+            if (itemId != 0) {
                 ItemComposition itemComposition = client.getItemDefinition(itemId);
-                if (itemComposition != null)
-                {
+                if (itemComposition != null) {
                     equippedItems.add(itemComposition.getName());
                 }
             }
@@ -187,30 +160,25 @@ public class EquipmentService
      * This can be read in your WorldStateEndpoint without calling client APIs
      * from the HTTP thread.
      */
-    public EquipmentState buildEquipmentSnapshot(Player player)
-    {
+    public EquipmentState buildEquipmentSnapshot(Player player) {
         EquipmentState equipState = new EquipmentState();
         Map<String, Integer> slotsMap = new HashMap<>();
 
-        if (player != null && player.getPlayerComposition() != null)
-        {
+        if (player != null && player.getPlayerComposition() != null) {
             PlayerComposition composition = player.getPlayerComposition();
 
-            for (KitType type : KitType.values())
-            {
+            for (KitType type : KitType.values()) {
                 int itemId = composition.getEquipmentId(type);
                 String slotName = type.name().toLowerCase();
                 // store e.g. "headId" -> itemId
                 slotsMap.put(slotName + "Id", itemId);
 
                 // For debugging
-                if (itemId != 0 && itemId != -1)
-                {
+                if (itemId != 0 && itemId != -1) {
                     ItemComposition itemComp = client.getItemDefinition(itemId);
-                    if (itemComp != null)
-                    {
-                        log.info("Equipment {} (index {}): ID {}, Name {}",
-                            slotName, type.getIndex(), itemId, itemComp.getName());
+                    if (itemComp != null && log.isDebugEnabled()) {
+                        log.debug("Equipment {} (index {}): ID {}, Name {}",
+                                slotName, type.getIndex(), itemId, itemComp.getName());
                     }
                 }
             }
