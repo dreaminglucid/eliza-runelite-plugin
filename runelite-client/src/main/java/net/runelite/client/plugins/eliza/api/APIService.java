@@ -4,12 +4,10 @@ import com.google.gson.*;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
 import net.runelite.client.plugins.eliza.services.OtherPlayerTracker;
 import net.runelite.client.plugins.eliza.utils.ElizaConstants;
 import okhttp3.*;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +20,6 @@ import java.util.function.Consumer;
 public class APIService {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private final OkHttpClient httpClient = new OkHttpClient();
-    private final Gson gson = new Gson();
 
     public void sendMessage(String sender, String message, Client client,
             OtherPlayerTracker playerTracker, ElizaConfig config,

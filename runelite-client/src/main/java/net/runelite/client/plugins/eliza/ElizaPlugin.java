@@ -21,7 +21,6 @@ import net.runelite.client.plugins.eliza.config.ElizaConfig;
 import net.runelite.client.plugins.eliza.services.EquipmentService;
 import net.runelite.client.plugins.eliza.services.MessageHandler;
 import net.runelite.client.plugins.eliza.services.OtherPlayerTracker;
-import net.runelite.client.plugins.eliza.services.LocalPlayerService;
 import net.runelite.client.plugins.eliza.services.WorldService;
 import net.runelite.client.plugins.eliza.state.EquipmentState;
 import net.runelite.client.plugins.eliza.state.GameDataSnapshot;
@@ -61,9 +60,6 @@ public class ElizaPlugin extends Plugin {
 
     @Inject
     private OtherPlayerTracker playerTracker;
-
-    @Inject
-    private LocalPlayerService localPlayerService;
 
     @Inject
     private EquipmentService equipmentService;

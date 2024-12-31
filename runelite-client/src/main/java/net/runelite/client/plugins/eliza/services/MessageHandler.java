@@ -1,8 +1,6 @@
 package net.runelite.client.plugins.eliza.services;
 
-import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.ChatMessage;
