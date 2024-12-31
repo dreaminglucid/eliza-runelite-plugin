@@ -7,7 +7,7 @@ import java.awt.Color;
 
 import net.runelite.client.plugins.eliza.ElizaPlugin;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
-import net.runelite.client.plugins.eliza.services.OtherPlayerTracker;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;

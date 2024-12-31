@@ -1,12 +1,13 @@
-package net.runelite.client.plugins.eliza.services;
+package net.runelite.client.plugins.eliza.services.chat;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.plugins.eliza.api.APIService;
+import net.runelite.client.plugins.eliza.api.external.APIService;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
+import net.runelite.client.plugins.eliza.services.player.OtherPlayerTracker;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

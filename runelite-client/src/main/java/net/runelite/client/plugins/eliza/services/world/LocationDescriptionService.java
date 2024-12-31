@@ -1,35 +1,14 @@
-package net.runelite.client.plugins.eliza.services;
+package net.runelite.client.plugins.eliza.services.world;
 
-import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.client.plugins.eliza.state.LocationState;
-import net.runelite.api.coords.Angle;
-import net.runelite.api.coords.Direction;
-
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Singleton
-public class WorldService {
-    @Inject
-    private Client client;
-
-    @Inject
-    private OtherPlayerTracker playerTracker;
-
-    @Inject
-    private LocalPlayerService localPlayerService;
-
-    // Define known locations and their descriptions
+public class LocationDescriptionService {
     private static final Map<Integer, Map<String, Object>> LOCATION_DATA = new HashMap<>();
     static {
         // Lumbridge & Surroundings
@@ -260,52 +239,7 @@ public class WorldService {
         });
     }
 
-    public LocationState buildLocationState(Player player, OtherPlayerTracker tracker) {
-        LocationState locState = new LocationState();
-
-        if (player == null) {
-            locState.setDescription("No local player");
-            locState.setNearbyPlayers(Collections.emptyList());
-            return locState;
-        }
-
-        WorldPoint point = player.getWorldLocation();
-        locState.setX(point.getX());
-        locState.setY(point.getY());
-        locState.setPlane(point.getPlane());
-        locState.setRegionId(point.getRegionID());
-
-        String areaDesc = getAreaDescription(point);
-        Direction facing = new Angle(player.getOrientation()).getNearestDirection();
-        String desc = String.format("%s, facing %s", areaDesc, facing.name().toLowerCase());
-
-        String nearbyPlayersDesc = tracker.getNearbyPlayersDescription(point);
-        if (!nearbyPlayersDesc.isEmpty()) {
-            desc += " with " + nearbyPlayersDesc;
-        }
-        locState.setDescription(desc);
-
-        List<Map<String, Object>> nearList = new ArrayList<>();
-        for (Player p : client.getPlayers()) {
-            if (p != null && !p.equals(localPlayerService.getLocalPlayer())) {
-                WorldPoint otherPoint = p.getWorldLocation();
-                if (otherPoint != null) {
-                    int distance = point.distanceTo(otherPoint);
-                    if (distance <= 15) {
-                        Map<String, Object> info = new HashMap<>();
-                        info.put("name", p.getName());
-                        info.put("distance", distance);
-                        nearList.add(info);
-                    }
-                }
-            }
-        }
-        locState.setNearbyPlayers(nearList);
-
-        return locState;
-    }
-
-    private String getAreaDescription(WorldPoint point) {
+    public String getAreaDescription(WorldPoint point) {
         int regionId = point.getRegionID();
         Map<String, Object> locationInfo = LOCATION_DATA.get(regionId);
 
@@ -329,44 +263,21 @@ public class WorldService {
         return String.format("at coordinates (%d, %d)", point.getX(), point.getY());
     }
 
-    public JsonObject getWorldLocation(Player player) {
-        JsonObject location = new JsonObject();
-        if (player == null) {
-            return location;
-        }
-
-        WorldPoint point = player.getWorldLocation();
-        location.addProperty("x", point.getX());
-        location.addProperty("y", point.getY());
-        location.addProperty("plane", point.getPlane());
-        location.addProperty("regionId", point.getRegionID());
-
-        playerTracker.addNearbyPlayersToJson(location, point);
-
-        return location;
+    public String getLocationName(WorldPoint point) {
+        int regionId = point.getRegionID();
+        Map<String, Object> locationInfo = LOCATION_DATA.get(regionId);
+        return locationInfo != null ? (String) locationInfo.get("name") : null;
     }
 
-    public String getLocationDescription(Player player) {
-        if (player == null) {
-            return "unknown location";
-        }
-
-        WorldPoint point = player.getWorldLocation();
-        String areaDesc = getAreaDescription(point);
-
-        Direction facing = new Angle(player.getOrientation()).getNearestDirection();
-        StringBuilder description = new StringBuilder(areaDesc);
-        description.append(String.format(", facing %s", facing.name().toLowerCase()));
-
-        String nearbyPlayersDesc = playerTracker.getNearbyPlayersDescription(point);
-        if (!nearbyPlayersDesc.isEmpty()) {
-            description.append(" with ").append(nearbyPlayersDesc);
-        }
-
-        return description.toString();
+    public String getLocationDescription(WorldPoint point) {
+        int regionId = point.getRegionID();
+        Map<String, Object> locationInfo = LOCATION_DATA.get(regionId);
+        return locationInfo != null ? (String) locationInfo.get("description") : null;
     }
 
-    public WorldPoint getCurrentLocation() {
-        return localPlayerService.getLocalPlayerLocation();
+    public String[] getLocationLandmarks(WorldPoint point) {
+        int regionId = point.getRegionID();
+        Map<String, Object> locationInfo = LOCATION_DATA.get(regionId);
+        return locationInfo != null ? (String[]) locationInfo.get("landmarks") : null;
     }
 }

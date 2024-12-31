@@ -1,4 +1,4 @@
-// package net.runelite.client.plugins.eliza.services;
+// package net.runelite.client.plugins.eliza.services.emote;
 
 // import lombok.extern.slf4j.Slf4j;
 // import net.runelite.api.Client;
