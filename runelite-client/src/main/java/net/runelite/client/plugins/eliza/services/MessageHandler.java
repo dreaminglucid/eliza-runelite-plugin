@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.services;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -7,11 +7,13 @@ import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.plugins.eliza.api.APIService;
+import net.runelite.client.plugins.eliza.config.ElizaConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static net.runelite.client.plugins.eliza.ElizaConstants.*;
+import static net.runelite.client.plugins.eliza.utils.ElizaConstants.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;

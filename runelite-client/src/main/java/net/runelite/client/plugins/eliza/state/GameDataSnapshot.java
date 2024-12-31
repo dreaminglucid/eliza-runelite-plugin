@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.state;
 
 import lombok.Data;
 

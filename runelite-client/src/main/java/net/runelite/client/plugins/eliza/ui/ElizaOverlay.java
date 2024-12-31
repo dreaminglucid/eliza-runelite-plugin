@@ -1,9 +1,13 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.ui;
 
 import javax.inject.Inject;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Color;
+
+import net.runelite.client.plugins.eliza.ElizaPlugin;
+import net.runelite.client.plugins.eliza.config.ElizaConfig;
+import net.runelite.client.plugins.eliza.services.PlayerTracker;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;

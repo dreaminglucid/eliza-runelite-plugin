@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,6 +8,13 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.client.plugins.eliza.ElizaPlugin;
+import net.runelite.client.plugins.eliza.services.PlayerTracker;
+import net.runelite.client.plugins.eliza.services.WorldService;
+import net.runelite.client.plugins.eliza.services.EquipmentService;
+import net.runelite.client.plugins.eliza.state.GameDataSnapshot;
+import net.runelite.client.plugins.eliza.state.LocationState;
+import net.runelite.client.plugins.eliza.state.EquipmentState;
 
 import javax.inject.Singleton;
 import java.io.IOException;

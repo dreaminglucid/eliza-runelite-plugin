@@ -1,10 +1,11 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.services;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.eliza.state.LocationState;
 import net.runelite.api.coords.Angle;
 import net.runelite.api.coords.Direction;
 

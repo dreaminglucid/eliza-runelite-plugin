@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.services;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -8,6 +8,7 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerComposition;
 import net.runelite.api.kit.KitType;
+import net.runelite.client.plugins.eliza.state.EquipmentState;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.config;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;

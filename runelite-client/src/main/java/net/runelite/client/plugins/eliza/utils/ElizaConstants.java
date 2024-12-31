@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.utils;
 
 public class ElizaConstants {
     public static final int MAX_MESSAGE_LENGTH = 80;

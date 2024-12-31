@@ -1,10 +1,13 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.api;
 
 import com.google.gson.*;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.client.plugins.eliza.config.ElizaConfig;
+import net.runelite.client.plugins.eliza.services.PlayerTracker;
+import net.runelite.client.plugins.eliza.utils.ElizaConstants;
 import okhttp3.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;

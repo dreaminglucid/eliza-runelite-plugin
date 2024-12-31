@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.eliza;
+package net.runelite.client.plugins.eliza.services;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import static net.runelite.client.plugins.eliza.ElizaConstants.*;
+import static net.runelite.client.plugins.eliza.utils.ElizaConstants.*;
 
 import java.util.*;
 
