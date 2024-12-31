@@ -16,6 +16,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.eliza.actions.chat.MessageHandler;
+import net.runelite.client.plugins.eliza.actions.emote.EmoteHandler; // [NEW] Inject your reflection-based EmoteHandler
 import net.runelite.client.plugins.eliza.api.external.APIService;
 import net.runelite.client.plugins.eliza.api.local.WorldStateEndpoint;
 import net.runelite.client.plugins.eliza.config.ElizaConfig;
@@ -28,15 +29,24 @@ import net.runelite.client.plugins.eliza.state.LocationState;
 import net.runelite.client.plugins.eliza.ui.ElizaOverlay;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+/**
+ * Main plugin class for Eliza integration with RuneLite.
+ * Updated to inject and init reflection-based EmoteHandler (for auto emotes).
+ */
 @Slf4j
-@PluginDescriptor(name = "Eliza", description = "eliza integrated with runelite", tags = { "npc", "chatbot", "eliza",
-        "interaction", "ai" })
-public class ElizaPlugin extends Plugin {
+@PluginDescriptor(
+    name = "Eliza",
+    description = "eliza integrated with runelite",
+    tags = { "npc", "chatbot", "eliza", "interaction", "ai" }
+)
+public class ElizaPlugin extends Plugin
+{
     // A static snapshot accessible by the HTTP server
     private static final GameDataSnapshot snapshot = new GameDataSnapshot();
 
     // Provide a getter so the WorldStateEndpoint can read it
-    public static GameDataSnapshot getSnapshot() {
+    public static GameDataSnapshot getSnapshot()
+    {
         return snapshot;
     }
 
@@ -74,10 +84,15 @@ public class ElizaPlugin extends Plugin {
     @Inject
     private WorldStateEndpoint worldStateEndpoint;
 
+    // [NEW] Reflection-based EmoteHandler that auto-clicks emotes
+    @Inject
+    private EmoteHandler emoteHandler;
+
     private boolean isStarted = false;
 
     @Provides
-    ElizaConfig provideConfig(ConfigManager configManager) {
+    ElizaConfig provideConfig(ConfigManager configManager)
+    {
         return configManager.getConfig(ElizaConfig.class);
     }
 
@@ -85,47 +100,60 @@ public class ElizaPlugin extends Plugin {
     @Provides
     @Singleton
     public static WorldStateEndpoint provideWorldStateEndpoint(
-            Client client,
-            WorldService worldService,
-            OtherPlayerService playerTracker,
-            EquipmentService equipmentService) {
+        Client client,
+        WorldService worldService,
+        OtherPlayerService playerTracker,
+        EquipmentService equipmentService
+    )
+    {
         return new WorldStateEndpoint(client, worldService, playerTracker, equipmentService);
     }
 
     @Override
-    protected void startUp() {
+    protected void startUp()
+    {
         log.info("========== ELIZA STARTUP ==========");
         overlayManager.add(overlay);
         playerTracker.clear();
 
-        // Start the local server
+        // Start the local HTTP server for /world-state
         worldStateEndpoint.start();
 
-        if (config.enabled()) {
+        // [NEW] Initialize reflection for EmoteHandler 
+        // so we can auto-perform wave/dance etc. 
+        // (If your EmoteHandler has initReflection(), call it here.)
+        emoteHandler.initReflection();
+
+        // If plugin is enabled in config, fully start
+        if (config.enabled())
+        {
             startPlugin();
         }
     }
 
     @Override
-    protected void shutDown() {
+    protected void shutDown()
+    {
         log.info("========== ELIZA SHUTDOWN ==========");
         overlayManager.remove(overlay);
 
-        // Stop the server
+        // Stop the local server
         worldStateEndpoint.stop();
 
         playerTracker.clear();
         stopPlugin();
     }
 
-    private void startPlugin() {
+    private void startPlugin()
+    {
         isStarted = true;
         messageHandler.reset();
         playerTracker.reset();
         log.info("eliza started. API Endpoint: {}", config.apiEndpoint());
     }
 
-    private void stopPlugin() {
+    private void stopPlugin()
+    {
         isStarted = false;
         messageHandler.reset();
         playerTracker.reset();
@@ -133,17 +161,20 @@ public class ElizaPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onGameTick(GameTick tick) {
-        // First, check if plugin is enabled and the game is fully logged in
-        if (!config.enabled() || client.getGameState() != GameState.LOGGED_IN) {
+    public void onGameTick(GameTick tick)
+    {
+        // Check if plugin is enabled and the game is fully logged in
+        if (!config.enabled() || client.getGameState() != GameState.LOGGED_IN)
+        {
             // Mark snapshot as not logged in, so the server sees minimal data
             snapshot.setLoggedIn(false);
             return;
         }
 
-        // We are logged in, so update the snapshot
+        // We are logged in => update the snapshot
         Player local = client.getLocalPlayer();
-        if (local != null) {
+        if (local != null)
+        {
             snapshot.setLoggedIn(true);
             snapshot.setPlayerName(local.getName());
 
@@ -157,7 +188,9 @@ public class ElizaPlugin extends Plugin {
 
             snapshot.setTotalPlayers(playerTracker.getActivePlayerCount());
             snapshot.setTimestamp(System.currentTimeMillis());
-        } else {
+        }
+        else
+        {
             snapshot.setLoggedIn(false);
         }
 
@@ -165,10 +198,15 @@ public class ElizaPlugin extends Plugin {
         messageHandler.processQueue(clientThread);
     }
 
+    /**
+     * Intercept public chat messages for potential AI response
+     */
     @Subscribe
-    public void onChatMessage(ChatMessage chatMessage) {
+    public void onChatMessage(ChatMessage chatMessage)
+    {
         // Only handle chat if enabled, started, and it's public chat
-        if (!config.enabled() || !isStarted || chatMessage.getType() != ChatMessageType.PUBLICCHAT) {
+        if (!config.enabled() || !isStarted || chatMessage.getType() != ChatMessageType.PUBLICCHAT)
+        {
             return;
         }
 
@@ -176,7 +214,8 @@ public class ElizaPlugin extends Plugin {
         messageHandler.handleChatMessage(chatMessage, client, playerTracker, apiService, config);
     }
 
-    public boolean isStarted() {
+    public boolean isStarted()
+    {
         return isStarted;
     }
 }
